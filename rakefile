@@ -1,0 +1,82 @@
+# Basic template:
+# desc "decription of your task"
+# task :name_of_task {=> ["depend1", "depend2", ...]} do
+#   //Code
+# end
+#
+# Run with rake-12.0.0
+
+desc "First task" # Actually, this line is optional and you can skip it without any problems
+                  # But, it won't be shown on list. Ex. Excute "rake -T"
+task :default => ["Bell", "Door", "Actor"] do 
+# Given "default" when just typing "rake" and excuting this instruction on your commandline
+# The order of excution:
+#   Bell => Door => Actor => default
+    puts "Welcome"
+end
+
+# The following order of defined tasks won't decide the order of execution
+
+desc "A gust drops by"
+task :Actor, [:name] do |t, args| #[:name] is an argument in a set for example, off course, you can add more and seperated by comma
+    # Execute "rake Actor[:name]" and the argument, "name", will be passed to
+    # XXX Do such command will only execute "Actor" task. If you need to execute whole flow, this way isn't suitable when you also need this argument
+    puts "(Walking into...)"
+    # XXX No assign to the argument will cause the variable be nil. (No default initialization for variable)
+    if args.name != nil
+        puts "#{args.name}: Long time no see..."
+    else
+        puts "Long time no see..."
+    end
+end
+
+task :Bell do
+    puts "(Ringing...)"
+end
+# XXX You can define mutitask with same name and the last defined take will be excuted first
+task :Bell do
+    puts "(Ringing again....)"
+    puts "Coming!!!!"
+end
+task :bell do
+    # XXX
+    # This task won't be executed
+    # 1. No definite calling refers to this task.
+    # 2. This case also implys the name of the task is case-sensitive
+    puts("....")
+end
+
+desc "Use when the host doesn't know who knocks the door"
+task :verify do
+    puts "(Just check who knocks the door...)"
+end
+
+task :Door do
+    # XXX you can excute "rake guest=xxx to add 'guest' field in global variable, ENV, for use in this case for example"
+    if !ENV.key? "guest"
+        # XXX Sometimes, you need another task to process in specific situation
+        Rake::Task[:verify].invoke
+    end
+    puts "(Opened...)"
+end
+
+# =================== Related to files/directories ======================
+
+directory "test"
+
+# XXX In this case, when execute "rake check", the "checkme.html" will be check if it exits 
+#   or the creation timestampe is the newest with others such comparsion.html for example
+desc "file check"
+task :check => "checkme.html" do # No [] being embraced is ok because this task/file is for one
+    # check the file checkme.html
+    puts "Done on check"
+end
+
+# test folder will be created if it doesn't exist. (It is triggered due to definition: directory "test")
+file "checkme.html" => ["test", "comparsion.html"] do
+    # XXX In this case, if no comparsion.html is found on the path or defined, the execution will fail
+    # XXX When falling down here, it means
+    #   1. checkme.html doesn't exist
+    #   2. checkme.html is older than comparsion (creation time)
+    puts "checkme.html is not here or too old"
+end
