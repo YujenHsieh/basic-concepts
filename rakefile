@@ -77,6 +77,6 @@ file "checkme.html" => ["test", "comparsion.html"] do
     # XXX In this case, if no comparsion.html is found on the path or defined, the execution will fail
     # XXX When falling down here, it means
     #   1. checkme.html doesn't exist
-    #   2. checkme.html is older than comparsion (creation time)
+    #   2. checkme.html is older than comparsion.html (creation time)
     puts "checkme.html is not here or too old"
 end
